@@ -28,28 +28,29 @@ document.querySelectorAll(".staff-card, .stat-card, .game-box").forEach((el) => 
 async function updateDiscord() {
     try {
         const res = await fetch("https://discord.com/api/guilds/1388137532407060541/widget.json");
-        const data = await res.json();
 
-        if (data.presence_count !== undefined) {
-            document.getElementById("online").textContent = data.presence_count;
+        if (!res.ok) {
+            throw new Error("Discord widget not enabled or invalid response");
         }
 
-        // If Discord doesn't expose total members, show Online+
+        const data = await res.json();
+
+        document.getElementById("online").textContent =
+            data.presence_count ?? "--";
+
         if (data.members && Array.isArray(data.members)) {
-            document.getElementById("members").textContent = data.members.length + "+";
+            document.getElementById("members").textContent =
+                data.members.length;
         } else {
             document.getElementById("members").textContent = "Live";
         }
 
     } catch (e) {
+        console.log("Discord error:", e);
         document.getElementById("members").textContent = "--";
         document.getElementById("online").textContent = "--";
     }
 }
-
-updateDiscord();
-setInterval(updateDiscord, 60000);
-
 // Navbar glow on scroll
 window.addEventListener("scroll", () => {
     const header = document.querySelector("header");

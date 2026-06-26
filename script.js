@@ -27,7 +27,7 @@ document.querySelectorAll(".staff-card, .stat-card, .game-box").forEach((el) => 
 // Discord Widget API
 async function updateDiscord() {
     try {
-        const res = await fetch("https://discord.com/api/guilds/1388137532407060541/widget.json");
+        const res = await fetch("https://discord.com/api/guilds/1517214801502273597/widget.json");
 
         if (!res.ok) {
             throw new Error("Discord widget not enabled or invalid response");

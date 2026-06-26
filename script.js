@@ -82,12 +82,11 @@ async function updateDiscordStats() {
         const online = document.getElementById("onlineCount");
 
 if (members)
-    members.textContent =
-        data.approximate_member_count ?? "--";
+    members.textContent = data.members.length ?? "--";
 
 if (online)
-    online.textContent =
-        data.approximate_presence_count ?? "--";
+    online.textContent = data.presence_count ?? "--";
+
 
     } catch (err) {
         console.log("Discord stats unavailable.");

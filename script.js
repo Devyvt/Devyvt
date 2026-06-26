@@ -71,7 +71,7 @@ nav.style.boxShadow="none";
 async function updateDiscordStats() {
     try {
         const response = await fetch(
-            "https://discord.com/api/v10/invites/C49YDkZXaU?with_counts=true"
+            "https://discord.com/api/guilds/1517214801502273597/widget.json"
         );
 
         if (!response.ok) throw new Error("Discord API error");

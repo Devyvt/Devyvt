@@ -193,7 +193,7 @@ fill:"forwards"
 
 // ---------- Console ----------
 
-console.log("%cSecretGame Community",
+console.log("%cDevyvt Studios",
 "color:#5865F2;font-size:26px;font-weight:bold;");
 
 console.log("%cWebsite loaded successfully.",

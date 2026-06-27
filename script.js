@@ -63,45 +63,34 @@ nav.style.boxShadow="none";
 
 });
 /* ===========================
-   SecretGame Community v2
+   Devyvt
    Part 2
 =========================== */
 
 // ---------- Discord Invite API ----------
-async function updateDiscordStats() {
+const SERVER_ID = "YOUR_SERVER_ID";
+
+async function loadDiscord() {
     try {
-        const response = await fetch(
-            "https://discord.com/api/guilds/1517214801502273597/widget.json"
+        const res = await fetch(
+            `https://discord.com/api/guilds/${SERVER_ID}/widget.json`
         );
 
-        if (!response.ok) throw new Error("Discord API error");
+        const data = await res.json();
 
-        const data = await response.json();
+        document.getElementById("discordOnline").textContent =
+            data.presence_count;
 
-        const members = document.getElementById("memberCount");
-        const online = document.getElementById("onlineCount");
+        document.getElementById("discordMembers").textContent =
+            data.members?.length || "Unknown";
 
-if (members)
-    members.textContent = data.members.length ?? "--";
-
-if (online)
-    online.textContent = data.presence_count ?? "--";
-
-
-    } catch (err) {
-        console.log("Discord stats unavailable.");
-
-        const members = document.getElementById("memberCount");
-        const online = document.getElementById("onlineCount");
-
-        if (members) members.textContent = "--";
-        if (online) online.textContent = "--";
+    } catch (e) {
+        console.log(e);
     }
 }
 
-updateDiscordStats();
-setInterval(updateDiscordStats,60000);
-
+loadDiscord();
+setInterval(loadDiscord, 30000);
 
 // ---------- Roblox Thumbnail ----------
 async function loadThumbnail(){

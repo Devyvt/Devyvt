@@ -190,7 +190,24 @@ fill:"forwards"
 
 }
 
+const modal = document.getElementById("updateLogModal");
+const openBtn = document.getElementById("openUpdateLog");
+const closeBtn = document.getElementById("closeUpdateLog");
 
+openBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    modal.style.display = "block";
+});
+
+closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+});
+
+window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+        modal.style.display = "none";
+    }
+});
 // ---------- Console ----------
 
 console.log("%cDevyvt Studios",

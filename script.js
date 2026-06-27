@@ -68,7 +68,7 @@ nav.style.boxShadow="none";
 =========================== */
 
 // ---------- Discord Invite API ----------
-const SERVER_ID = "YOUR_SERVER_ID";
+const SERVER_ID = "1517214801502273597";
 
 async function loadDiscord() {
     try {
@@ -78,20 +78,16 @@ async function loadDiscord() {
 
         const data = await res.json();
 
-        document.getElementById("discordOnline").textContent =
-            data.presence_count;
-
-        document.getElementById("discordMembers").textContent =
-            data.members?.length || "Unknown";
+        document.getElementById("discordOnline").textContent = data.presence_count;
 
     } catch (e) {
-        console.log(e);
+        console.error(e);
+        document.getElementById("discordOnline").textContent = "Offline";
     }
 }
 
 loadDiscord();
 setInterval(loadDiscord, 30000);
-
 // ---------- Roblox Thumbnail ----------
 async function loadThumbnail(){
 

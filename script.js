@@ -67,7 +67,7 @@ nav.style.boxShadow="none";
    Part 2
 =========================== */
 
-// ---------- Discord Invite API ----------
+// ---------- Discord Widget ----------
 const SERVER_ID = "1517214801502273597";
 
 async function loadDiscord() {
@@ -76,20 +76,17 @@ async function loadDiscord() {
             `https://discord.com/api/guilds/${SERVER_ID}/widget.json`
         );
 
-        const data = await res.json();
-
-        console.log("Discord data:", data);
-
-        const online = document.getElementById("discordOnline");
-
-        if (online) {
-            online.textContent = data.presence_count;
-        } else {
-            console.error("discordOnline element not found!");
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
         }
 
-    } catch (e) {
-        console.error(e);
+        const data = await res.json();
+
+        document.getElementById("discordOnline").textContent = data.presence_count;
+
+    } catch (err) {
+        console.error("Discord error:", err);
+        document.getElementById("discordOnline").textContent = "Offline";
     }
 }
 

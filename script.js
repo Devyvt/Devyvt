@@ -68,6 +68,8 @@ nav.style.boxShadow="none";
 =========================== */
 
 // ---------- Discord Invite API ----------
+const SERVER_ID = "1517214801502273597";
+
 async function loadDiscord() {
     try {
         const res = await fetch(

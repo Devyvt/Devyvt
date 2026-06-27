@@ -68,8 +68,6 @@ nav.style.boxShadow="none";
 =========================== */
 
 // ---------- Discord Invite API ----------
-const SERVER_ID = "1517214801502273597";
-
 async function loadDiscord() {
     try {
         const res = await fetch(
@@ -78,11 +76,18 @@ async function loadDiscord() {
 
         const data = await res.json();
 
-        document.getElementById("discordOnline").textContent = data.presence_count;
+        console.log("Discord data:", data);
+
+        const online = document.getElementById("discordOnline");
+
+        if (online) {
+            online.textContent = data.presence_count;
+        } else {
+            console.error("discordOnline element not found!");
+        }
 
     } catch (e) {
         console.error(e);
-        document.getElementById("discordOnline").textContent = "Offline";
     }
 }
 

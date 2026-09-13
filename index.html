@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevTools - Roblox Image Resizer</title>
+
+    <title>Devyvt Tools</title>
 
     <style>
         * {
@@ -12,16 +13,16 @@
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0d0d0f;
-            color: white;
             min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0b0b0e;
+            color: white;
         }
 
         header {
             padding: 22px 30px;
-            border-bottom: 1px solid #242428;
             background: #111114;
+            border-bottom: 1px solid #24242a;
         }
 
         header h1 {
@@ -31,23 +32,26 @@
 
         header p {
             margin: 6px 0 0;
-            color: #999;
+            color: #888;
+            font-size: 14px;
         }
 
         .container {
+            width: 100%;
             max-width: 900px;
-            margin: 50px auto;
+            margin: 45px auto;
             padding: 20px;
         }
 
         .card {
-            background: #151518;
-            border: 1px solid #29292e;
+            background: #141417;
+            border: 1px solid #29292f;
             border-radius: 18px;
             padding: 25px;
         }
 
         .upload {
+            display: block;
             border: 2px dashed #3a3a42;
             border-radius: 15px;
             padding: 45px 20px;
@@ -57,8 +61,8 @@
         }
 
         .upload:hover {
-            border-color: #777;
             background: #19191d;
+            border-color: #666;
         }
 
         .upload input {
@@ -71,14 +75,15 @@
         }
 
         .upload-subtitle {
-            color: #888;
             margin-top: 8px;
+            color: #888;
+            font-size: 14px;
         }
 
         .types {
             display: flex;
             gap: 12px;
-            margin-top: 25px;
+            margin-top: 20px;
         }
 
         .type {
@@ -89,16 +94,19 @@
             background: #19191d;
             color: white;
             cursor: pointer;
-            text-align: center;
+            text-align: left;
+            font-family: inherit;
+            transition: 0.2s;
         }
 
         .type:hover {
             background: #222228;
+            border-color: #555;
         }
 
         .type.active {
-            border-color: #fff;
-            background: #25252b;
+            background: #25252c;
+            border-color: white;
         }
 
         .type strong {
@@ -114,67 +122,78 @@
         }
 
         .preview {
-            margin-top: 25px;
             display: none;
+            margin-top: 30px;
         }
 
         .preview h2 {
+            margin-bottom: 12px;
             font-size: 18px;
         }
 
         .preview-box {
-            background: #0b0b0d;
-            border-radius: 14px;
+            width: 100%;
+            min-height: 280px;
             padding: 20px;
+            background: #09090b;
+            border-radius: 14px;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 250px;
+            overflow: hidden;
         }
 
-        #previewImage {
+        #canvas {
             max-width: 100%;
-            max-height: 450px;
-            object-fit: contain;
+            max-height: 500px;
+            width: auto;
+            height: auto;
             border-radius: 8px;
         }
 
         .info {
-            margin-top: 15px;
-            color: #999;
+            margin-top: 12px;
             text-align: center;
+            color: #888;
+            font-size: 14px;
         }
 
-        button.download {
+        .download {
             width: 100%;
-            margin-top: 20px;
+            margin-top: 18px;
             padding: 15px;
-            border: none;
+            border: 0;
             border-radius: 10px;
             background: white;
             color: black;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
         }
 
-        button.download:hover {
+        .download:hover {
             background: #ddd;
         }
 
-        button.download:disabled {
-            background: #444;
-            color: #888;
+        .download:disabled {
+            background: #333;
+            color: #777;
             cursor: not-allowed;
         }
 
         @media (max-width: 600px) {
-            .types {
-                flex-direction: column;
+            .container {
+                margin: 20px auto;
+                padding: 12px;
             }
 
-            .container {
-                margin: 25px auto;
+            .card {
+                padding: 18px;
+            }
+
+            .types {
+                flex-direction: column;
             }
         }
     </style>
@@ -183,7 +202,7 @@
 <body>
 
 <header>
-    <h1>DevTools</h1>
+    <h1>Devyvt Tools</h1>
     <p>Simple tools for Roblox developers</p>
 </header>
 
@@ -191,8 +210,15 @@
 
     <div class="card">
 
-        <label class="upload">
-            <input type="file" id="fileInput" accept="image/*">
+        <!-- IMAGE UPLOAD -->
+
+        <label class="upload" for="fileInput">
+
+            <input
+                type="file"
+                id="fileInput"
+                accept="image/png,image/jpeg,image/webp"
+            >
 
             <div class="upload-title">
                 Upload an image
@@ -201,21 +227,37 @@
             <div class="upload-subtitle">
                 PNG, JPG or WEBP
             </div>
+
         </label>
+
+
+        <!-- TYPE SELECTOR -->
 
         <div class="types">
 
-            <button class="type active" id="iconButton">
+            <button
+                type="button"
+                class="type active"
+                id="iconButton"
+            >
                 <strong>Roblox Icon</strong>
                 <span>512 × 512</span>
             </button>
 
-            <button class="type" id="thumbnailButton">
+
+            <button
+                type="button"
+                class="type"
+                id="thumbnailButton"
+            >
                 <strong>Roblox Thumbnail</strong>
                 <span>1920 × 1080</span>
             </button>
 
         </div>
+
+
+        <!-- PREVIEW -->
 
         <div class="preview" id="preview">
 
@@ -229,8 +271,13 @@
                 512 × 512
             </div>
 
-            <button class="download" id="downloadButton" disabled>
-                Download Image
+            <button
+                type="button"
+                class="download"
+                id="downloadButton"
+                disabled
+            >
+                Download PNG
             </button>
 
         </div>
@@ -239,163 +286,312 @@
 
 </div>
 
+
 <script>
 
-const fileInput = document.getElementById("fileInput");
-const iconButton = document.getElementById("iconButton");
-const thumbnailButton = document.getElementById("thumbnailButton");
-const preview = document.getElementById("preview");
-const canvas = document.getElementById("canvas");
-const downloadButton = document.getElementById("downloadButton");
-const sizeInfo = document.getElementById("sizeInfo");
+    const fileInput = document.getElementById("fileInput");
 
-let selectedType = "icon";
-let image = null;
+    const iconButton =
+        document.getElementById("iconButton");
 
+    const thumbnailButton =
+        document.getElementById("thumbnailButton");
 
-// Image sizes
-const sizes = {
-    icon: {
-        width: 512,
-        height: 512
-    },
+    const preview =
+        document.getElementById("preview");
 
-    thumbnail: {
-        width: 1920,
-        height: 1080
-    }
-};
+    const canvas =
+        document.getElementById("canvas");
+
+    const sizeInfo =
+        document.getElementById("sizeInfo");
+
+    const downloadButton =
+        document.getElementById("downloadButton");
 
 
-// Select Icon
-iconButton.addEventListener("click", () => {
+    let selectedType = "icon";
 
-    selectedType = "icon";
-
-    iconButton.classList.add("active");
-    thumbnailButton.classList.remove("active");
-
-    if (image) {
-        resizeImage();
-    }
-});
+    let uploadedImage = null;
 
 
-// Select Thumbnail
-thumbnailButton.addEventListener("click", () => {
+    /*
+        TARGET SIZES
+    */
 
-    selectedType = "thumbnail";
+    const sizes = {
 
-    thumbnailButton.classList.add("active");
-    iconButton.classList.remove("active");
+        icon: {
+            width: 512,
+            height: 512
+        },
 
-    if (image) {
-        resizeImage();
-    }
-});
+        thumbnail: {
+            width: 1920,
+            height: 1080
+        }
 
-
-// Upload image
-fileInput.addEventListener("change", () => {
-
-    const file = fileInput.files[0];
-
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function(event) {
-
-        image = new Image();
-
-        image.onload = function() {
-
-            preview.style.display = "block";
-            downloadButton.disabled = false;
-
-            resizeImage();
-        };
-
-        image.src = event.target.result;
     };
 
-    reader.readAsDataURL(file);
-});
+
+    /*
+        ICON BUTTON
+    */
+
+    iconButton.addEventListener("click", function () {
+
+        selectedType = "icon";
+
+        iconButton.classList.add("active");
+
+        thumbnailButton.classList.remove("active");
+
+        updateSizeText();
+
+        if (uploadedImage) {
+            resizeImage();
+        }
+
+    });
 
 
-// Resize + crop image
-function resizeImage() {
+    /*
+        THUMBNAIL BUTTON
+    */
 
-    if (!image) return;
+    thumbnailButton.addEventListener("click", function () {
 
-    const target = sizes[selectedType];
+        selectedType = "thumbnail";
 
-    canvas.width = target.width;
-    canvas.height = target.height;
+        thumbnailButton.classList.add("active");
 
-    const ctx = canvas.getContext("2d");
+        iconButton.classList.remove("active");
 
-    ctx.clearRect(0, 0, target.width, target.height);
+        updateSizeText();
 
-    // Calculate crop
-    const imageRatio = image.width / image.height;
-    const targetRatio = target.width / target.height;
+        if (uploadedImage) {
+            resizeImage();
+        }
 
-    let sourceWidth;
-    let sourceHeight;
-    let sourceX;
-    let sourceY;
+    });
 
-    if (imageRatio > targetRatio) {
 
-        sourceHeight = image.height;
-        sourceWidth = image.height * targetRatio;
+    /*
+        IMAGE UPLOAD
+    */
 
-        sourceX = (image.width - sourceWidth) / 2;
-        sourceY = 0;
+    fileInput.addEventListener("change", function () {
 
-    } else {
+        const file = this.files[0];
 
-        sourceWidth = image.width;
-        sourceHeight = image.width / targetRatio;
+        if (!file) {
+            return;
+        }
 
-        sourceX = 0;
-        sourceY = (image.height - sourceHeight) / 2;
+
+        const reader = new FileReader();
+
+
+        reader.onload = function (event) {
+
+            const img = new Image();
+
+
+            img.onload = function () {
+
+                uploadedImage = img;
+
+                preview.style.display = "block";
+
+                downloadButton.disabled = false;
+
+                resizeImage();
+
+            };
+
+
+            img.src = event.target.result;
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+    });
+
+
+    /*
+        UPDATE SIZE TEXT
+    */
+
+    function updateSizeText() {
+
+        const size = sizes[selectedType];
+
+        sizeInfo.textContent =
+            size.width + " × " + size.height;
+
     }
 
-    ctx.drawImage(
-        image,
-        sourceX,
-        sourceY,
-        sourceWidth,
-        sourceHeight,
-        0,
-        0,
-        target.width,
-        target.height
-    );
 
-    sizeInfo.textContent =
-        target.width + " × " + target.height;
-}
+    /*
+        RESIZE IMAGE
+    */
+
+    function resizeImage() {
+
+        if (!uploadedImage) {
+            return;
+        }
 
 
-// Download
-downloadButton.addEventListener("click", () => {
+        const target =
+            sizes[selectedType];
 
-    if (!image) return;
 
-    const link = document.createElement("a");
+        canvas.width =
+            target.width;
 
-    link.download =
-        selectedType === "icon"
-            ? "roblox-icon.png"
-            : "roblox-thumbnail.png";
+        canvas.height =
+            target.height;
 
-    link.href = canvas.toDataURL("image/png");
 
-    link.click();
-});
+        const ctx =
+            canvas.getContext("2d");
+
+
+        ctx.clearRect(
+            0,
+            0,
+            target.width,
+            target.height
+        );
+
+
+        /*
+            CALCULATE CROP
+        */
+
+        const imageRatio =
+            uploadedImage.width /
+            uploadedImage.height;
+
+
+        const targetRatio =
+            target.width /
+            target.height;
+
+
+        let sourceWidth;
+        let sourceHeight;
+        let sourceX;
+        let sourceY;
+
+
+        if (imageRatio > targetRatio) {
+
+            /*
+                IMAGE IS TOO WIDE
+            */
+
+            sourceHeight =
+                uploadedImage.height;
+
+            sourceWidth =
+                uploadedImage.height *
+                targetRatio;
+
+            sourceX =
+                (uploadedImage.width -
+                sourceWidth) / 2;
+
+            sourceY = 0;
+
+        } else {
+
+            /*
+                IMAGE IS TOO TALL
+            */
+
+            sourceWidth =
+                uploadedImage.width;
+
+            sourceHeight =
+                uploadedImage.width /
+                targetRatio;
+
+            sourceX = 0;
+
+            sourceY =
+                (uploadedImage.height -
+                sourceHeight) / 2;
+
+        }
+
+
+        /*
+            DRAW CROPPED IMAGE
+        */
+
+        ctx.drawImage(
+
+            uploadedImage,
+
+            sourceX,
+            sourceY,
+
+            sourceWidth,
+            sourceHeight,
+
+            0,
+            0,
+
+            target.width,
+            target.height
+
+        );
+
+
+        updateSizeText();
+
+    }
+
+
+    /*
+        DOWNLOAD
+    */
+
+    downloadButton.addEventListener("click", function () {
+
+        if (!uploadedImage) {
+            return;
+        }
+
+
+        const link =
+            document.createElement("a");
+
+
+        if (selectedType === "icon") {
+
+            link.download =
+                "roblox-icon.png";
+
+        } else {
+
+            link.download =
+                "roblox-thumbnail.png";
+
+        }
+
+
+        link.href =
+            canvas.toDataURL("image/png");
+
+
+        link.click();
+
+    });
 
 </script>
 

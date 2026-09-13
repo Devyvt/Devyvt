@@ -1,22 +1,403 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTools - Roblox Image Resizer</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0d0d0f;
+            color: white;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 22px 30px;
+            border-bottom: 1px solid #242428;
+            background: #111114;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        header p {
+            margin: 6px 0 0;
+            color: #999;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: #151518;
+            border: 1px solid #29292e;
+            border-radius: 18px;
+            padding: 25px;
+        }
+
+        .upload {
+            border: 2px dashed #3a3a42;
+            border-radius: 15px;
+            padding: 45px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .upload:hover {
+            border-color: #777;
+            background: #19191d;
+        }
+
+        .upload input {
+            display: none;
+        }
+
+        .upload-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .upload-subtitle {
+            color: #888;
+            margin-top: 8px;
+        }
+
+        .types {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .type {
+            flex: 1;
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid #303038;
+            background: #19191d;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .type:hover {
+            background: #222228;
+        }
+
+        .type.active {
+            border-color: #fff;
+            background: #25252b;
+        }
+
+        .type strong {
+            display: block;
+            font-size: 17px;
+        }
+
+        .type span {
+            display: block;
+            color: #888;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .preview {
+            margin-top: 25px;
+            display: none;
+        }
+
+        .preview h2 {
+            font-size: 18px;
+        }
+
+        .preview-box {
+            background: #0b0b0d;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 250px;
+        }
+
+        #previewImage {
+            max-width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .info {
+            margin-top: 15px;
+            color: #999;
+            text-align: center;
+        }
+
+        button.download {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: white;
+            color: black;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button.download:hover {
+            background: #ddd;
+        }
+
+        button.download:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 600px) {
+            .types {
+                flex-direction: column;
+            }
+
+            .container {
+                margin: 25px auto;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-    <button onclick="clicked()">Click Me</button>
+<header>
+    <h1>DevTools</h1>
+    <p>Simple tools for Roblox developers</p>
+</header>
 
-    <script>
-        async function clicked() {
-            await fetch("/api/track", {
-                method: "POST"
-            });
+<div class="container">
 
-            // Wat er gebeurt nadat iemand klikt
-            window.location.href = "https://example.com";
-        }
-    </script>
+    <div class="card">
+
+        <label class="upload">
+            <input type="file" id="fileInput" accept="image/*">
+
+            <div class="upload-title">
+                Upload an image
+            </div>
+
+            <div class="upload-subtitle">
+                PNG, JPG or WEBP
+            </div>
+        </label>
+
+        <div class="types">
+
+            <button class="type active" id="iconButton">
+                <strong>Roblox Icon</strong>
+                <span>512 × 512</span>
+            </button>
+
+            <button class="type" id="thumbnailButton">
+                <strong>Roblox Thumbnail</strong>
+                <span>1920 × 1080</span>
+            </button>
+
+        </div>
+
+        <div class="preview" id="preview">
+
+            <h2>Preview</h2>
+
+            <div class="preview-box">
+                <canvas id="canvas"></canvas>
+            </div>
+
+            <div class="info" id="sizeInfo">
+                512 × 512
+            </div>
+
+            <button class="download" id="downloadButton" disabled>
+                Download Image
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const fileInput = document.getElementById("fileInput");
+const iconButton = document.getElementById("iconButton");
+const thumbnailButton = document.getElementById("thumbnailButton");
+const preview = document.getElementById("preview");
+const canvas = document.getElementById("canvas");
+const downloadButton = document.getElementById("downloadButton");
+const sizeInfo = document.getElementById("sizeInfo");
+
+let selectedType = "icon";
+let image = null;
+
+
+// Image sizes
+const sizes = {
+    icon: {
+        width: 512,
+        height: 512
+    },
+
+    thumbnail: {
+        width: 1920,
+        height: 1080
+    }
+};
+
+
+// Select Icon
+iconButton.addEventListener("click", () => {
+
+    selectedType = "icon";
+
+    iconButton.classList.add("active");
+    thumbnailButton.classList.remove("active");
+
+    if (image) {
+        resizeImage();
+    }
+});
+
+
+// Select Thumbnail
+thumbnailButton.addEventListener("click", () => {
+
+    selectedType = "thumbnail";
+
+    thumbnailButton.classList.add("active");
+    iconButton.classList.remove("active");
+
+    if (image) {
+        resizeImage();
+    }
+});
+
+
+// Upload image
+fileInput.addEventListener("change", () => {
+
+    const file = fileInput.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+
+        image = new Image();
+
+        image.onload = function() {
+
+            preview.style.display = "block";
+            downloadButton.disabled = false;
+
+            resizeImage();
+        };
+
+        image.src = event.target.result;
+    };
+
+    reader.readAsDataURL(file);
+});
+
+
+// Resize + crop image
+function resizeImage() {
+
+    if (!image) return;
+
+    const target = sizes[selectedType];
+
+    canvas.width = target.width;
+    canvas.height = target.height;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, target.width, target.height);
+
+    // Calculate crop
+    const imageRatio = image.width / image.height;
+    const targetRatio = target.width / target.height;
+
+    let sourceWidth;
+    let sourceHeight;
+    let sourceX;
+    let sourceY;
+
+    if (imageRatio > targetRatio) {
+
+        sourceHeight = image.height;
+        sourceWidth = image.height * targetRatio;
+
+        sourceX = (image.width - sourceWidth) / 2;
+        sourceY = 0;
+
+    } else {
+
+        sourceWidth = image.width;
+        sourceHeight = image.width / targetRatio;
+
+        sourceX = 0;
+        sourceY = (image.height - sourceHeight) / 2;
+    }
+
+    ctx.drawImage(
+        image,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        0,
+        0,
+        target.width,
+        target.height
+    );
+
+    sizeInfo.textContent =
+        target.width + " × " + target.height;
+}
+
+
+// Download
+downloadButton.addEventListener("click", () => {
+
+    if (!image) return;
+
+    const link = document.createElement("a");
+
+    link.download =
+        selectedType === "icon"
+            ? "roblox-icon.png"
+            : "roblox-thumbnail.png";
+
+    link.href = canvas.toDataURL("image/png");
+
+    link.click();
+});
+
+</script>
 
 </body>
 </html>

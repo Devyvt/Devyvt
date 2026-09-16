@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devkit — Roblox Icon & Product Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14161c;
+    --surface: #1b1e27;
+    --surface-2: #23273233;
+    --border: #2c303c;
+    --text: #edeef2;
+    --muted: #8a8f9c;
+    --amber: #ffb020;
+    --amber-dim: #7a5b1a;
+    --discord: #5865f2;
+    --danger: #e5484d;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.5;
+  }
+  h1,h2,h3, .brand, .tab, .stat-num{
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+  code, .mono, .id-badge, input[type="number"]{
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  a{ color: var(--amber); }
+
+  /* ---------- layout shell ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+  @media (max-width: 860px){
+    .shell{ grid-template-columns: 1fr; }
+    .sidebar{ position: static; flex-direction:row; overflow-x:auto; height:auto; border-right:none; border-bottom:1px solid var(--border); }
+    .sidebar .brand{ display:none; }
+    .nav{ flex-direction:row; padding: 8px; gap:4px; }
+    .tab{ white-space:nowrap; }
+  }
+
+  .sidebar{
+    position: sticky;
+    top:0;
+    height:100vh;
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    padding: 28px 18px;
+  }
+  .brand{
+    font-size: 19px;
+    font-weight:700;
+    letter-spacing: -0.02em;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-bottom: 34px;
+    padding: 0 6px;
+  }
+  .brand .dot{
+    width:10px; height:10px;
+    background: var(--amber);
+    border-radius: 2px;
+    flex-shrink:0;
+  }
+  .nav{
+    display:flex;
+    flex-direction:column;
+    gap: 2px;
+  }
+  .tab{
+    all: unset;
+    cursor:pointer;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    font-size: 14.5px;
+    font-weight: 600;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .tab:hover{ color: var(--text); background: var(--surface); }
+  .tab.active{ color: var(--bg); background: var(--amber); }
+  .tab svg{ width:16px; height:16px; flex-shrink:0; }
+
+  .sidebar-foot{
+    margin-top:auto;
+    padding: 14px;
+    border-top:1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .main{
+    padding: 40px 44px 90px;
+    max-width: 920px;
+  }
+  @media (max-width: 640px){ .main{ padding: 26px 18px 90px; } }
+
+  .page{ display:none; }
+  .page.active{ display:block; animation: fadein .25s ease; }
+  @keyframes fadein{ from{ opacity:0; transform: translateY(4px); } to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){ .page.active{ animation:none; } }
+
+  .page-head{ margin-bottom: 28px; }
+  .page-head h1{ font-size: 26px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .page-head p{ margin:0; color: var(--muted); font-size: 14.5px; max-width: 60ch; }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 22px;
+  }
+  .card + .card{ margin-top: 16px; }
+
+  label{
+    display:block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .field{ margin-bottom: 16px; }
+  input[type="text"], input[type="number"], input[type="url"], textarea, select{
+    width:100%;
+    background: #10121780;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  textarea{ resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus, select:focus, button:focus-visible, .tab:focus-visible{
+    outline: 2px solid var(--amber);
+    outline-offset: 1px;
+  }
+
+  .row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .row > .field{ flex:1; min-width: 140px; }
+
+  .btn{
+    all:unset;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background: var(--amber);
+    color: #201404;
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+  }
+  .btn:hover{ filter: brightness(1.08); }
+  .btn.secondary{
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn.danger{ background: transparent; color: var(--danger); padding: 6px 10px; font-size:12.5px; }
+  .btn.danger:hover{ background: #e5484d1a; }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+  .dropzone{
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-md);
+    padding: 30px 20px;
+    text-align:center;
+    color: var(--muted);
+    font-size: 13.5px;
+    cursor:pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .dropzone:hover, .dropzone.drag{ border-color: var(--amber); background: #ffb02010; }
+  .dropzone strong{ color: var(--text); }
+
+  .preset-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
+    gap:8px;
+    margin-bottom: 16px;
+  }
+  .preset{
+    all:unset;
+    cursor:pointer;
+    border:1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 10px;
+    font-size: 12.5px;
+    text-align:left;
+    color: var(--muted);
+  }
+  .preset span{ display:block; color: var(--text); font-weight:600; font-size:13px; }
+  .preset:hover{ border-color: var(--amber); }
+  .preset.active{ border-color: var(--amber); background: #ffb02014; color: var(--text); }
+
+  .result-box{
+    display:flex;
+    gap: 20px;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .preview-tile{
+    background:
+      linear-gradient(45deg, #00000030 25%, transparent 25%),
+      linear-gradient(-45deg, #00000030 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #00000030 75%),
+      linear-gradient(-45deg, transparent 75%, #00000030 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    background-color:#0d0f14;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .preview-tile img{ display:block; max-width:100%; max-height:100%; image-rendering: pixelated; }
+
+  .empty{
+    color: var(--muted);
+    font-size: 13.5px;
+    text-align:center;
+    padding: 30px 10px;
+  }
+
+  /* products */
+  .product-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px,1fr));
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .product{
+    background: var(--surface);
+    border:1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .product img{ width:100%; aspect-ratio:1/1; object-fit:cover; background:#10121799; }
+  .product-body{ padding: 12px 14px 14px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .product-body h3{ margin:0; font-size:14.5px; }
+  .product-body p{ margin:0; font-size:12.5px; color: var(--muted); flex:1; }
+  .product-actions{ display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
+  .product-actions .btn{ padding: 7px 12px; font-size:12.5px; }
+
+  /* discord bar */
+  .discord-bar{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 50;
+  }
+  .discord-btn{
+    all:unset;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background: var(--discord);
+    color:#fff;
+    padding: 12px 18px 12px 14px;
+    border-radius: 999px;
+    font-weight:700;
+    font-size:13.5px;
+    box-shadow: 0 6px 20px #5865f24d;
+  }
+  .discord-btn:hover{ filter:brightness(1.08); }
+  .discord-btn svg{ width:20px; height:20px; flex-shrink:0; }
+  @media (max-width:640px){
+    .discord-bar{ position:static; margin-top: 30px; }
+    .discord-btn{ width:100%; justify-content:center; }
+  }
+
+  .toast{
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .2s, transform .2s;
+    z-index: 100;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  .hint{ font-size:12px; color:var(--muted); margin-top:6px; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="dot"></span>Devkit</div>
+    <nav class="nav">
+      <button class="tab active" data-page="resizer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        Icon Resizer
+      </button>
+      <button class="tab" data-page="finder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Icon Finder
+      </button>
+      <button class="tab" data-page="products">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/></svg>
+        Products
+      </button>
+    </nav>
+    <div class="sidebar-foot">Built for Roblox devs. Edit <span class="mono">DISCORD_INVITE_LINK</span> in the script to set your invite.</div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ================= ICON RESIZER ================= -->
+    <section class="page active" id="page-resizer">
+      <div class="page-head">
+        <h1>Icon Resizer</h1>
+        <p>Upload an image and shrink or stretch it to an exact size — a Roblox icon, a group thumbnail, or any custom dimensions.</p>
+      </div>
+
+      <div class="card">
+        <div class="dropzone" id="dropzone">
+          <strong>Click to upload</strong> or drag an image here<br>PNG, JPG, or WEBP
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none">
+
+        <div class="field" style="margin-top:18px;">
+          <label>Preset size</label>
+          <div class="preset-grid" id="presetGrid">
+            <button class="preset" data-w="150" data-h="150"><span>150 × 150</span>Icon</button>
+            <button class="preset" data-w="512" data-h="512"><span>512 × 512</span>Thumbnail</button>
+            <button class="preset" data-w="1200" data-h="627"><span>1200 × 627</span>Wide banner</button>
+            <button class="preset active" data-w="0" data-h="0"><span>Custom</span>Set below</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="widthInput">Width (px)</label>
+            <input type="number" id="widthInput" value="150" min="1" max="4096">
+          </div>
+          <div class="field">
+            <label for="heightInput">Height (px)</label>
+            <input type="number" id="heightInput" value="150" min="1" max="4096">
+          </div>
+          <div class="field">
+            <label for="fitSelect">Fit</label>
+            <select id="fitSelect">
+              <option value="cover">Fill &amp; crop</option>
+              <option value="contain">Fit inside</option>
+              <option value="stretch">Stretch</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn" id="resizeBtn" disabled>Resize image</button>
+
+        <div class="result-box" id="resizeResult" style="display:none;">
+          <div class="preview-tile" id="previewTile" style="width:180px; height:180px;">
+            <img id="previewImg" alt="Resized preview">
+          </div>
+          <div>
+            <p class="hint" id="resultDims" style="margin-bottom:12px;"></p>
+            <button class="btn secondary" id="downloadBtn">Download PNG</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ICON FINDER ================= -->
+    <section class="page" id="page-finder">
+      <div class="page-head">
+        <h1>Icon Finder</h1>
+        <p>Paste a Roblox asset, decal, or image ID and it shows you the image — handy for grabbing an icon someone only gave you the ID for.</p>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div class="field" style="flex:2;">
+            <label for="assetIdInput">Image / asset ID</label>
+            <input type="text" id="assetIdInput" placeholder="e.g. 12345678901" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="sizeSelect">Size</label>
+            <select id="sizeSelect">
+              <option value="150x150">150 × 150</option>
+              <option value="256x256" selected>256 × 256</option>
+              <option value="420x420">420 × 420</option>
+              <option value="720x720">720 × 720</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" id="findBtn">Find image</button>
+        <p class="hint">Works for asset IDs that have a completed, public thumbnail (decals, images, icons). Private, moderated, or non-image assets won't return anything.</p>
+
+        <div class="result-box" id="finderResult" style="display:none;">
+          <div class="preview-tile" id="finderTile" style="width:180px; height:180px;">
+            <img id="finderImg" alt="Roblox asset preview">
+          </div>
+          <div>
+            <p class="hint" id="finderStatus" style="margin-bottom:12px;"></p>
+            <div style="display:flex; gap:8px;">
+              <button class="btn secondary" id="finderDownload">Download</button>
+              <button class="btn secondary" id="finderCopyLink">Copy image link</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PRODUCTS ================= -->
+    <section class="page" id="page-products">
+      <div class="page-head">
+        <h1>Products</h1>
+        <p>Every gamepass for sale, in one place. This list is the same for every visitor — it's set in the site's code, not by anyone browsing it.</p>
+      </div>
+
+      <div id="productGrid" class="product-grid"></div>
+      <p class="empty" id="productEmpty">No products yet — add some in the <span class="mono">PRODUCTS</span> list in the script.</p>
+    </section>
+
+  </main>
+</div>
+
+<div class="discord-bar">
+  <button class="discord-btn" id="discordBtn">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.9-1.52.07.07 0 0 0-.08.04c-.21.38-.45.87-.61 1.26a18.3 18.3 0 0 0-5.48 0 12.6 12.6 0 0 0-.62-1.26.08.08 0 0 0-.08-.04c-1.7.29-3.36.8-4.9 1.52a.07.07 0 0 0-.03.03C1.24 8.6.42 12.7.8 16.75a.08.08 0 0 0 .03.06 19.9 19.9 0 0 0 5.99 3.03.08.08 0 0 0 .08-.03c.46-.63.87-1.3 1.23-2a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.89.08.08 0 0 1 0-.13c.13-.1.25-.2.37-.3a.07.07 0 0 1 .08 0c3.93 1.8 8.18 1.8 12.06 0a.07.07 0 0 1 .08 0c.12.1.24.2.37.3a.08.08 0 0 1 0 .13c-.6.35-1.22.65-1.87.89a.08.08 0 0 0-.04.11c.36.7.78 1.37 1.23 2a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6-3.03.08.08 0 0 0 .03-.06c.46-4.68-.77-8.75-3.24-12.35a.06.06 0 0 0-.03-.03ZM8.68 14.3c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.21 0 2.17 1.1 2.15 2.42 0 1.34-.95 2.42-2.15 2.42Zm6.65 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.21 0 2.17 1.1 2.15 2.42 0 1.34-.94 2.42-2.15 2.42Z"/></svg>
+    Join our Discord
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ======================================================
+   EDIT THIS to your own Discord invite link:
+   ====================================================== */
+const DISCORD_INVITE_LINK = "https://discord.gg/your-invite-here";
+
+/* ---------------- tab navigation ---------------- */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById("page-"+tab.dataset.page).classList.add("active");
+  });
+});
+
+/* ---------------- toast helper ---------------- */
+function toast(msg){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=> el.classList.remove("show"), 2200);
+}
+
+/* ---------------- discord button ---------------- */
+document.getElementById("discordBtn").addEventListener("click", ()=>{
+  window.open(DISCORD_INVITE_LINK, "_blank", "noopener");
+});
+
+/* ================= ICON RESIZER ================= */
+const dropzone = document.getElementById("dropzone");
+const fileInput = document.getElementById("fileInput");
+const widthInput = document.getElementById("widthInput");
+const heightInput = document.getElementById("heightInput");
+const fitSelect = document.getElementById("fitSelect");
+const resizeBtn = document.getElementById("resizeBtn");
+const presetGrid = document.getElementById("presetGrid");
+let sourceImage = null;
+let resizedDataUrl = null;
+
+dropzone.addEventListener("click", ()=> fileInput.click());
+["dragover","dragenter"].forEach(evt=>{
+  dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.add("drag"); });
+});
+["dragleave","drop"].forEach(evt=>{
+  dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.remove("drag"); });
+});
+dropzone.addEventListener("drop", e=>{
+  const f = e.dataTransfer.files[0];
+  if(f) loadImageFile(f);
+});
+fileInput.addEventListener("change", e=>{
+  if(e.target.files[0]) loadImageFile(e.target.files[0]);
+});
+
+function loadImageFile(file){
+  if(!file.type.startsWith("image/")){ toast("That's not an image file"); return; }
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const img = new Image();
+    img.onload = ()=>{
+      sourceImage = img;
+      dropzone.innerHTML = `<strong>${file.name}</strong> loaded — click to choose a different image`;
+      resizeBtn.disabled = false;
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+presetGrid.querySelectorAll(".preset").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    presetGrid.querySelectorAll(".preset").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    const w = parseInt(btn.dataset.w), h = parseInt(btn.dataset.h);
+    if(w && h){ widthInput.value = w; heightInput.value = h; }
+  });
+});
+
+resizeBtn.addEventListener("click", ()=>{
+  if(!sourceImage) return;
+  const w = Math.max(1, parseInt(widthInput.value) || 150);
+  const h = Math.max(1, parseInt(heightInput.value) || 150);
+  const fit = fitSelect.value;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d");
+
+  if(fit === "stretch"){
+    ctx.drawImage(sourceImage, 0, 0, w, h);
+  } else {
+    const srcRatio = sourceImage.width / sourceImage.height;
+    const dstRatio = w / h;
+    let sx=0, sy=0, sw=sourceImage.width, sh=sourceImage.height;
+    let dx=0, dy=0, dw=w, dh=h;
+
+    if(fit === "cover"){
+      if(srcRatio > dstRatio){
+        sw = sourceImage.height * dstRatio;
+        sx = (sourceImage.width - sw) / 2;
+      } else {
+        sh = sourceImage.width / dstRatio;
+        sy = (sourceImage.height - sh) / 2;
+      }
+    } else { // contain
+      if(srcRatio > dstRatio){
+        dh = w / srcRatio; dy = (h - dh) / 2;
+      } else {
+        dw = h * srcRatio; dx = (w - dw) / 2;
+      }
+    }
+    ctx.drawImage(sourceImage, sx, sy, sw, sh, dx, dy, dw, dh);
+  }
+
+  resizedDataUrl = canvas.toDataURL("image/png");
+  document.getElementById("previewImg").src = resizedDataUrl;
+  document.getElementById("previewTile").style.width = Math.min(220, w) + "px";
+  document.getElementById("previewTile").style.height = Math.min(220, h) + "px";
+  document.getElementById("resultDims").textContent = `${w} × ${h}px, PNG`;
+  document.getElementById("resizeResult").style.display = "flex";
+});
+
+document.getElementById("downloadBtn").addEventListener("click", ()=>{
+  if(!resizedDataUrl) return;
+  const a = document.createElement("a");
+  a.href = resizedDataUrl;
+  a.download = `icon-${widthInput.value}x${heightInput.value}.png`;
+  a.click();
+});
+
+/* ================= ICON FINDER =================
+   Roblox retired the old direct-image thumbnail link. Thumbnails now
+   come from thumbnails.roblox.com, which returns JSON (not an image)
+   and doesn't allow browser pages to call it directly (no CORS
+   headers) — so this goes through a small public CORS proxy to read
+   that JSON, then displays the real image URL it contains.
+================================================= */
+document.getElementById("findBtn").addEventListener("click", async ()=>{
+  const id = document.getElementById("assetIdInput").value.trim();
+  if(!/^\d+$/.test(id)){ toast("Enter a numeric asset ID"); return; }
+  const size = document.getElementById("sizeSelect").value; // e.g. "256x256"
+
+  const img = document.getElementById("finderImg");
+  const status = document.getElementById("finderStatus");
+  const findBtn = document.getElementById("findBtn");
+  status.textContent = "Looking it up…";
+  img.removeAttribute("src");
+  delete img.dataset.url;
+  document.getElementById("finderResult").style.display = "flex";
+  findBtn.disabled = true;
+
+  const apiUrl = `https://thumbnails.roblox.com/v1/assets?assetIds=${id}&size=${size}&format=Png&isCircular=false`;
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+
+  try{
+    const res = await fetch(proxyUrl);
+    if(!res.ok) throw new Error("bad response");
+    const data = await res.json();
+    const item = data && data.data && data.data[0];
+
+    if(!item || item.state !== "Completed" || !item.imageUrl){
+      status.textContent = item && item.state === "Blocked"
+        ? "That asset has been moderated and has no public image."
+        : "Couldn't load that ID — it may be private or not an image asset.";
+      findBtn.disabled = false;
+      return;
+    }
+
+    img.onload = ()=>{ status.textContent = `Asset ${id} — ${size}px`; };
+    img.onerror = ()=>{ status.textContent = "Found it, but the image itself failed to load."; };
+    img.src = item.imageUrl;
+    img.dataset.url = item.imageUrl;
+  } catch(err){
+    status.textContent = "Lookup failed — the lookup service may be temporarily down. Try again in a moment.";
+  } finally {
+    findBtn.disabled = false;
+  }
+});
+
+document.getElementById("finderDownload").addEventListener("click", ()=>{
+  const url = document.getElementById("finderImg").dataset.url;
+  if(!url) return;
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "roblox-asset.png";
+  a.target = "_blank";
+  a.click();
+});
+document.getElementById("finderCopyLink").addEventListener("click", ()=>{
+  const url = document.getElementById("finderImg").dataset.url;
+  if(!url) return;
+  navigator.clipboard.writeText(url).then(()=> toast("Link copied"));
+});
+
+/* ================= PRODUCTS =================
+   This is the ONLY place products come from — visitors can't add,
+   edit, or remove anything here. To change what's listed, edit this
+   array, then save, commit, and push to GitHub.
+
+   Each product needs:
+     name : text shown as the title
+     link : the gamepass URL (opens in a new tab)
+     img  : image URL — a Roblox thumbnail link works great, e.g.
+            https://www.roblox.com/asset-thumbnail/image?assetId=YOUR_ID&width=420&height=420&format=png
+     desc : a short description (optional)
+
+   Add a new product by copying one of the blocks below and pasting
+   another one after it (don't forget the comma between entries).
+================================================= */
+const PRODUCTS = [
+  // {
+  //   name: "VIP Access",
+  //   link: "https://www.roblox.com/game-pass/00000000/VIP",
+  //   img: "https://www.roblox.com/asset-thumbnail/image?assetId=00000000&width=420&height=420&format=png",
+  //   desc: "Skip the line, get a VIP badge, and unlock the VIP-only room."
+  // },
+];
+
+function renderProducts(){
+  const list = PRODUCTS;
+  const grid = document.getElementById("productGrid");
+  const empty = document.getElementById("productEmpty");
+  grid.innerHTML = "";
+  empty.style.display = list.length ? "none" : "block";
+  list.forEach((p, i)=>{
+    const card = document.createElement("div");
+    card.className = "product";
+    card.innerHTML = `
+      <img src="${escapeAttr(p.img || '')}" alt="${escapeAttr(p.name)}" onerror="this.style.opacity=0.3">
+      <div class="product-body">
+        <h3>${escapeHtml(p.name)}</h3>
+        <p>${escapeHtml(p.desc || '')}</p>
+        <div class="product-actions">
+          <a class="btn secondary" href="${escapeAttr(p.link)}" target="_blank" rel="noopener">View gamepass</a>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return escapeHtml(s); }
+
+renderProducts();
+</script>
+</body>
+</html>
